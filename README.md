@@ -55,7 +55,7 @@ python package_sysbench/build_package.py
 
 ### 0. 사전 요구 사항 (설치 순서 중요)
 
-> **홈 화면 `HKG 최적화` 바로가기 타일을 사용하려면 `HKG_5W_Optimize_USB.zip` 설치 전에 **NEMESIS**와 [HMG-API](https://github.com/VysseCodes/HMG-API)가 먼저 설치되어 있어야 합니다.**  
+> **홈 화면 `HKG 최적화` 바로가기 타일을 사용하려면 `HKG_5W_Optimize_USB.zip` 설치 전에 NEMESIS와 [HMG-API](https://github.com/VysseCodes/HMG-API)가 먼저 설치되어 있어야 합니다.**  
 > 설치 스크립트(`scripts/post.sh`)가 설치 시점에 `/system/framework/hmgapi-hook.jar` 및 `/data/hmgapi` 존재 여부를 확인해 `hkg-optimize` HMG-API 모드와 홈 화면 트램펄린 앱을 자동 서명·등록합니다.
 
 1. 헤드유닛에 **NEMESIS** 및 **[HMG-API](https://github.com/VysseCodes/HMG-API)**를 먼저 설치하고 재부팅까지 완료합니다.
