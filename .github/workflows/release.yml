@@ -1,0 +1,96 @@
+name: Build and Publish Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-publish
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build packages and run host self-tests from source
+        run: |
+          python3 package_optimize/build_package.py
+          python3 package_sysbench/build_package.py
+          ls -lh \
+            HKG_5W_Optimize_USB.zip package_optimize/build/optimize.jar package_optimize/build/optimize.jar.sha256 \
+            HKG_5W_SysBench_USB.zip package_sysbench/build/sysbench.jar package_sysbench/build/sysbench.jar.sha256
+
+      - name: Prepare release metadata and notes
+        id: meta
+        run: |
+          OPT_VER=$(python3 -c "import re; print(re.search(r'^version=(.+)$', open('package_optimize/NEMESIS.data').read(), re.M).group(1).strip())")
+          BENCH_VER=$(python3 -c "import re; print(re.search(r'^version=(.+)$', open('package_sysbench/NEMESIS.data').read(), re.M).group(1).strip())")
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="v${OPT_VER}"
+          fi
+          OPT_SHA=$(cat package_optimize/build/optimize.jar.sha256)
+          BENCH_SHA=$(cat package_sysbench/build/sysbench.jar.sha256)
+          USB_OPT_SHA=$(sha256sum HKG_5W_Optimize_USB.zip)
+          USB_BENCH_SHA=$(sha256sum HKG_5W_SysBench_USB.zip)
+          NOTES_FILE="${RUNNER_TEMP}/release_notes.md"
+          OPT_VER="${OPT_VER}" BENCH_VER="${BENCH_VER}" TAG="${TAG}" \
+          OPT_SHA="${OPT_SHA}" BENCH_SHA="${BENCH_SHA}" \
+          USB_OPT_SHA="${USB_OPT_SHA}" USB_BENCH_SHA="${USB_BENCH_SHA}" \
+          NOTES_FILE="${NOTES_FILE}" python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          tag = os.environ["TAG"]
+          opt_ver = os.environ["OPT_VER"]
+          bench_ver = os.environ["BENCH_VER"]
+          lines = [
+              f"## HKG Gen5W Optimizer {tag}",
+              "",
+              f"- **최적화 패키지 (`hkg.optimize`)**: `v{opt_ver}` (`HKG_5W_Optimize_USB.zip`)",
+              f"- **성능 벤치마크 패키지 (`hkg.sysbench`)**: `v{bench_ver}` (`HKG_5W_SysBench_USB.zip`)",
+              "",
+              f"### 주요 기능 및 개선 사항 (`v{opt_ver}`)",
+              "- **HMG-API 홈 화면 바로가기 자동 연동**: HMG-API 설치 차량에서 `HKG 최적화` 홈 화면/앱 목록 타일 자동 등록 (`0 MB` 유휴 상주, 미설치 순정 기기 폴백 지원)",
+              "- **재부팅 시 자동 적용 안정화**: `svcmgr` `mode=background` 전환으로 매 콜드부팅 `+8초` 최적화 적용 및 `+35초` 스케줄 재정렬(`refresh-sched`) 보장",
+              "- **6대 무상주 최적화**: 디스크 로거 중지, KSM 중지, VM/eMMC 큐 튜닝, 내비·UI 멀티스레드 스케줄링 우선순위 조정, IRQ 코어 분산(`CPU1~3`), 화면 전환 애니메이션 가속",
+              "",
+              "### SHA-256 Checksums",
+              "```",
+              os.environ["USB_OPT_SHA"],
+              os.environ["OPT_SHA"],
+              os.environ["USB_BENCH_SHA"],
+              os.environ["BENCH_SHA"],
+              "```",
+              "",
+          ]
+          Path(os.environ["NOTES_FILE"]).write_text("\n".join(lines), encoding="utf-8")
+          PY
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "notes_path=${NOTES_FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: HKG Gen5W Optimizer ${{ steps.meta.outputs.tag }}
+          body_path: ${{ steps.meta.outputs.notes_path }}
+          make_latest: true
+          files: |
+            HKG_5W_Optimize_USB.zip
+            package_optimize/build/optimize.jar
+            package_optimize/build/optimize.jar.sha256
+            HKG_5W_SysBench_USB.zip
+            package_sysbench/build/sysbench.jar
+            package_sysbench/build/sysbench.jar.sha256

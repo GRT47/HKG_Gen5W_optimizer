@@ -1,0 +1,19 @@
+[nemesis]
+version=1.0.2
+id=hkg.optimize
+name=HKG 5W Optimize
+types=application,service
+postinstall=scripts/post.sh
+preuninstall=scripts/preun.sh
+
+[app.0]
+kind=sh
+path=bin/launch.sh
+uid=root
+
+[service.0]
+name=optimize-bootapply
+kind=sh
+path=svc/boot-apply.sh
+uid=root
+mode=background

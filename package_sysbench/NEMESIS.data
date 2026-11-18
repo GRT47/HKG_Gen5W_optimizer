@@ -1,0 +1,19 @@
+[nemesis]
+version=1.2.3
+id=hkg.sysbench
+name=HKG 5W SysBench
+types=application,service
+postinstall=scripts/post.sh
+preuninstall=scripts/preun.sh
+
+[app.0]
+kind=sh
+path=bin/launch.sh
+uid=root
+
+[service.0]
+name=sysbench-bootprobe
+kind=sh
+path=svc/boot-probe.sh
+uid=root
+mode=background

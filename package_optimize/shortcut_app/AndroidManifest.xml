@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hkg.optimize.app"
+    android:versionCode="102"
+    android:versionName="1.0.2">
+
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="HKG 최적화"
+        android:hasCode="true">
+        <activity
+            android:name=".LaunchActivity"
+            android:icon="@drawable/ic_launcher"
+            android:label="HKG 최적화"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
