@@ -53,7 +53,21 @@ python package_sysbench/build_package.py
 
 ## 실차 USB 설치 및 사용 방법
 
-1. **최적화 전용 설치**: `HKG_5W_Optimize_USB.zip` 압축을 FAT32 USB 루트에 해제(`NEMESIS.data`, `packages/hkg.optimize.zip`) 후 차량 USB 포트에서 설치합니다.
-   - 설치 직후 오버레이(`HKGSysOptOverlay`)가 열리며, **[🚀 원클릭 전체 최적화 적용]**, 개별 항목 ON/OFF, 애니메이션 프리셋, **[시동 시 자동 적용: ON/OFF]**를 제어할 수 있습니다.
+### 0. 사전 요구 사항 (설치 순서 중요)
+
+> **홈 화면 `HKG 최적화` 바로가기 타일을 사용하려면 `HKG_5W_Optimize_USB.zip` 설치 전에 **NEMESIS**와 [HMG-API](https://github.com/VysseCodes/HMG-API)가 먼저 설치되어 있어야 합니다.**  
+> 설치 스크립트(`scripts/post.sh`)가 설치 시점에 `/system/framework/hmgapi-hook.jar` 및 `/data/hmgapi` 존재 여부를 확인해 `hkg-optimize` HMG-API 모드와 홈 화면 트램펄린 앱을 자동 서명·등록합니다.
+
+1. 헤드유닛에 **NEMESIS** 및 **[HMG-API](https://github.com/VysseCodes/HMG-API)**를 먼저 설치하고 재부팅까지 완료합니다.
+2. FAT32 USB 메모리 최상단(루트)에 `HKG_5W_Optimize_USB.zip` 압축을 해제(`NEMESIS.data`, `packages/hkg.optimize.zip`)하여 차량 USB 포트에 연결합니다.
+3. 설치 완료 직후 `HKGSysOptOverlay` 설정 창이 자동으로 열리며(`앱/정보`에서는 즉시 실행 가능), **메인 홈 화면(`전체 메뉴`) 및 `홈 화면 아이콘 편집`의 `HKG 최적화` 아이콘은 다음 헤드유닛 재부팅 후**부터 나타납니다.
+
+* **HMG-API 설치 순서가 바뀐 경우**: HMG-API 설치 완료 후 `HKG_5W_Optimize_USB.zip`을 USB로 1회 다시 설치하면 홈 화면 바로가기가 등록됩니다.
+* **HMG-API 미설치 차량**: 홈 화면 바로가기만 등록되지 않으며, 재부팅 시 자동 최적화 적용 및 NEMESIS/CLI 실행은 정상 동작합니다.
+
+### 1. 패키지별 사용 방법
+
+1. **최적화 전용 (`HKG_5W_Optimize_USB.zip`)**:
+   - 홈 화면 `HKG 최적화` 타일 또는 설치 직후 열리는 오버레이(`HKGSysOptOverlay`)에서 **[🚀 원클릭 전체 최적화 적용]**, 개별 항목 ON/OFF, 애니메이션 프리셋, **[시동 시 자동 적용: ON/OFF]**를 제어할 수 있습니다.
    - CLI 제어: `sh /data/nemesis/apps/hkg.optimize/bin/launch.sh <cli-on|cli-off|cli-status|show|stop>`
-2. **성능 측정(`HKG_5W_SysBench_USB.zip`)**: `hkg.sysbench` 설치 후 부팅 90초 이상 지난 정차(`P`) 상태에서 `[① BEFORE (순정)]` → `[② AFTER (최적화)]`를 측정하면 USB(`/storage/usb0/HKG_SysBench/`)에 `summary.txt`, `Gen5W_Bench_Report.html`, JSON 리포트가 저장됩니다.
+2. **성능 측정 (`HKG_5W_SysBench_USB.zip`)**: `hkg.sysbench` 설치 후 부팅 90초 이상 지난 정차(`P`) 상태에서 `[① BEFORE (순정)]` → `[② AFTER (최적화)]`를 측정하면 USB(`/storage/usb0/HKG_SysBench/`)에 `summary.txt`, `Gen5W_Bench_Report.html`, JSON 리포트가 저장됩니다.
